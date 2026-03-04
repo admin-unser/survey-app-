@@ -71,8 +71,14 @@ export default function EditCasePage() {
       .eq("id", id);
 
     if (error) {
+      const isSchemaError =
+        /column.*survey_cases.*schema cache/i.test(error.message) ||
+        /Could not find the/i.test(error.message);
       toast.error("更新に失敗しました", {
-        description: error.message,
+        description: isSchemaError
+          ? "DBのスキーマが不足しています。Supabase の SQL Editor で supabase/migrations/ 内のマイグレーションを実行してください。"
+          : error.message,
+        duration: 8000,
       });
       return;
     }
@@ -103,6 +109,7 @@ export default function EditCasePage() {
     }
 
     toast.success("案件を更新しました");
+    router.refresh();
     router.push(`/cases/${id}`);
   };
 

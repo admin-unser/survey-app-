@@ -162,6 +162,14 @@ export default function CasesPage() {
     fetchCases();
   }, [fetchCases]);
 
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") fetchCases();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [fetchCases]);
+
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   const handleExport = async (format: "csv" | "xlsx") => {

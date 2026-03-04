@@ -65,6 +65,7 @@ export default function DashboardPage() {
   });
   const [recentCases, setRecentCases] = useState<SurveyCase[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -127,6 +128,14 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
+  }, [refreshKey]);
+
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") setRefreshKey((k) => k + 1);
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
   }, []);
 
   const statCards = [

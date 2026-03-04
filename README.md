@@ -27,6 +27,7 @@ npm install
 1. [Supabase](https://supabase.com) でプロジェクトを作成
 2. `supabase/schema.sql` の内容を Supabase の SQL Editor で実行
 3. Storage バケット `survey-photos` と `reports` が作成されていることを確認
+4. **「Could not find the 'client_contact_name' column」などのスキーマエラーが出る場合**: Supabase の SQL Editor で `supabase/migrations/20250304000000_add_missing_survey_cases_columns.sql` の内容を実行してください。
 
 ### 3. 環境変数の設定
 
@@ -61,6 +62,7 @@ npm run dev
 
 | ドキュメント | 内容 |
 |--------------|------|
+| [docs/DATA_STORAGE.md](docs/DATA_STORAGE.md) | **データの保存場所**（Supabase の Auth / DB / Storage の対応） |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | デプロイ方法・クライアントへの共有手順 |
 | [docs/USER_GUIDE.md](docs/USER_GUIDE.md) | 使い方ガイド（クライアント・現場担当向け） |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | データベース・バックエンドの仕組みと構成 |
