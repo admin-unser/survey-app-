@@ -166,6 +166,13 @@ export const CASE_STATUS_COLORS: Record<CaseStatus, string> = {
   reported: "bg-purple-100 text-purple-800",
 };
 
+export const WORK_TYPE_LABELS: Record<string, string> = {
+  survey: "現場調査",
+  maintenance: "メンテナンス",
+  construction: "施工",
+  meeting: "現場対応（打ち合わせ）",
+};
+
 export const PHOTO_CATEGORY_LABELS: Record<PhotoCategory, string> = {
   room: "室内全体",
   existing_ac: "既存エアコン",

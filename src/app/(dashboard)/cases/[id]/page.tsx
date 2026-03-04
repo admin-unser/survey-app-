@@ -27,9 +27,12 @@ import {
   ClipboardList,
   Edit,
   Download,
+  Loader2,
+  Briefcase,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
+import { toast } from "sonner";
 import type {
   SurveyCase,
   SurveyForm,
@@ -39,6 +42,7 @@ import type {
 import {
   CASE_STATUS_LABELS,
   CASE_STATUS_COLORS,
+  WORK_TYPE_LABELS,
 } from "@/types/database";
 
 const STATUS_ORDER: CaseStatus[] = [
@@ -62,6 +66,7 @@ export default function CaseDetailPage() {
   const [report, setReport] = useState<Report | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,6 +113,23 @@ export default function CaseDetailPage() {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (!supabaseUrl) return "#";
     return `${supabaseUrl}/storage/v1/object/public/reports/${report.pdf_storage_path}`;
+  };
+
+  const handleStatusChange = async (newStatus: CaseStatus) => {
+    if (!caseData || caseData.status === newStatus || isUpdatingStatus) return;
+    setIsUpdatingStatus(true);
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("survey_cases")
+      .update({ status: newStatus })
+      .eq("id", id);
+    setIsUpdatingStatus(false);
+    if (error) {
+      toast.error("ステータスの更新に失敗しました", { description: error.message });
+    } else {
+      setCaseData((prev) => prev ? { ...prev, status: newStatus } : prev);
+      toast.success(`ステータスを「${CASE_STATUS_LABELS[newStatus]}」に更新しました`);
+    }
   };
 
   const getMapUrl = (): string => {
@@ -168,13 +190,19 @@ export default function CaseDetailPage() {
             <h1 className="text-2xl font-bold tracking-tight">
               {caseData.case_number}
             </h1>
-            <div className="mt-1 flex items-center gap-2">
+            <div className="mt-1 flex flex-wrap items-center gap-2">
               <Badge
                 variant="secondary"
                 className={CASE_STATUS_COLORS[caseData.status]}
               >
                 {CASE_STATUS_LABELS[caseData.status]}
               </Badge>
+              {caseData.work_type && (
+                <Badge variant="outline" className="gap-1 font-normal">
+                  <Briefcase className="h-3 w-3" />
+                  {WORK_TYPE_LABELS[caseData.work_type] ?? caseData.work_type}
+                </Badge>
+              )}
               <span className="text-muted-foreground">{caseData.client_name}</span>
             </div>
           </div>
@@ -328,11 +356,11 @@ export default function CaseDetailPage() {
         </Card>
       )}
 
-      {/* Status Timeline */}
+      {/* Status Timeline - Quick Change */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">進捗状況</CardTitle>
-          <CardDescription>案件の進行状況</CardDescription>
+          <CardDescription>ステータスをクリックして即時変更できます</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
@@ -341,26 +369,33 @@ export default function CaseDetailPage() {
               const isCurrent = idx === statusIndex;
               return (
                 <div key={status} className="flex shrink-0 items-center">
-                  <div
-                    className={`flex flex-col items-center rounded-lg border px-4 py-2 min-w-[80px] ${
+                  <button
+                    type="button"
+                    onClick={() => handleStatusChange(status)}
+                    disabled={isUpdatingStatus || isCurrent}
+                    className={`flex flex-col items-center rounded-lg border px-4 py-2 min-w-[80px] transition-all ${
                       isCurrent
-                        ? "border-primary bg-primary/5"
+                        ? "border-primary bg-primary/5 cursor-default"
                         : isCompleted
-                          ? "border-chart-3/30 bg-chart-3/10"
-                          : "border-muted bg-muted/30"
-                    }`}
+                          ? "border-chart-3/30 bg-chart-3/10 hover:border-chart-3/60 hover:bg-chart-3/20 cursor-pointer"
+                          : "border-muted bg-muted/30 hover:border-primary/30 hover:bg-primary/5 cursor-pointer"
+                    } disabled:opacity-60`}
                   >
-                    <span
-                      className={`text-xs font-medium ${
-                        isCompleted ? "text-foreground" : "text-muted-foreground"
-                      }`}
-                    >
-                      {CASE_STATUS_LABELS[status]}
-                    </span>
-                    {isCompleted && (
-                      <span className="mt-0.5 text-chart-3">✓</span>
+                    {isUpdatingStatus && isCurrent ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                    ) : (
+                      <span
+                        className={`text-xs font-medium ${
+                          isCompleted ? "text-foreground" : "text-muted-foreground"
+                        }`}
+                      >
+                        {CASE_STATUS_LABELS[status]}
+                      </span>
                     )}
-                  </div>
+                    {isCompleted && !isUpdatingStatus && (
+                      <span className="mt-0.5 text-chart-3 text-xs">✓</span>
+                    )}
+                  </button>
                   {idx < STATUS_ORDER.length - 1 && (
                     <div
                       className={`mx-1 h-0.5 w-4 shrink-0 ${

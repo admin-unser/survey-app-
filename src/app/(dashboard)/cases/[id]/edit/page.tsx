@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import {
@@ -11,6 +12,8 @@ import {
 } from "@/components/cases/case-form";
 import type { SurveyCase } from "@/types/database";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export default function EditCasePage() {
   const params = useParams();
@@ -139,6 +142,14 @@ export default function EditCasePage() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="sm" asChild>
+          <Link href={`/cases/${id}`}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            案件詳細に戻る
+          </Link>
+        </Button>
+      </div>
       <div>
         <h1 className="text-2xl font-bold tracking-tight">案件編集</h1>
         <p className="text-muted-foreground mt-1">

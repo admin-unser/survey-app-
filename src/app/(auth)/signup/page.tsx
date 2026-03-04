@@ -60,8 +60,7 @@ export default function SignupPage() {
 
     if (data.session) {
       toast.success("アカウントを作成しました");
-      router.push("/dashboard");
-      router.refresh();
+      router.replace("/dashboard");
     } else {
       toast.success("アカウントを作成しました", {
         description: "確認メールを送信しました。メールを確認してください。",

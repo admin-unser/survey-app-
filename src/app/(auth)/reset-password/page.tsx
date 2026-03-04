@@ -49,8 +49,7 @@ export default function ResetPasswordPage() {
     }
 
     toast.success("パスワードを更新しました");
-    router.push("/dashboard");
-    router.refresh();
+    router.replace("/dashboard");
   };
 
   return (

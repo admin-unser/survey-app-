@@ -135,7 +135,6 @@ export default function ReportEditPage() {
       }
 
       toast.success("作業報告書を保存しました");
-      router.refresh();
       router.push(`/cases/${caseId}/report`);
     } catch (e) {
       const message =

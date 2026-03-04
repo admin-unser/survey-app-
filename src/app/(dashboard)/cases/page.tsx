@@ -38,6 +38,7 @@ import type { SurveyCase, CaseStatus } from "@/types/database";
 import {
   CASE_STATUS_LABELS,
   CASE_STATUS_COLORS,
+  WORK_TYPE_LABELS,
 } from "@/types/database";
 
 const ITEMS_PER_PAGE = 20;
@@ -416,6 +417,11 @@ export default function CasesPage() {
                         >
                           {CASE_STATUS_LABELS[c.status]}
                         </Badge>
+                        {c.work_type && (
+                          <Badge variant="outline" className="text-xs font-normal">
+                            {WORK_TYPE_LABELS[c.work_type] ?? c.work_type}
+                          </Badge>
+                        )}
                       </div>
                       <h3 className="font-semibold">{c.client_name}</h3>
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
@@ -444,9 +450,6 @@ export default function CasesPage() {
                           </span>
                         )}
                       </div>
-                    </div>
-                    <div className="shrink-0 text-sm text-muted-foreground">
-                      {c.assigned_profile?.full_name ?? "未割当"}
                     </div>
                   </div>
                 </Link>
