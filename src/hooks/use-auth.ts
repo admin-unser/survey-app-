@@ -44,7 +44,11 @@ export function useAuth() {
     } = supabase.auth.onAuthStateChange(async (event: string, session: { user: { id: string } } | null) => {
       if (event === "SIGNED_OUT") {
         setProfile(null);
-        router.push("/login");
+        // /logout や /login にいる場合は二重ナビゲーションを防ぐ
+        const pathname = window.location.pathname;
+        if (pathname !== "/login" && pathname !== "/logout") {
+          router.replace("/login");
+        }
       } else if (session?.user) {
         try {
           const { data, error } = await supabase
@@ -65,7 +69,11 @@ export function useAuth() {
 
   const signOut = useCallback(async () => {
     const supabase = createClient();
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut({ scope: "local" });
+    } catch {
+      // 失敗してもログインへ
+    }
     router.push("/login");
   }, [router]);
 

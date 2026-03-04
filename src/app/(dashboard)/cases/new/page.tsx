@@ -96,7 +96,6 @@ export default function NewCasePage() {
       }
 
       toast.success("案件を作成しました", { duration: 3000 });
-      router.refresh();
       router.push(`/cases/${newCase.id}`);
     } catch (e) {
       const message =

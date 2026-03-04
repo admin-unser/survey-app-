@@ -71,7 +71,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 function UserMenu() {
-  const { profile } = useAuth();
+  const { profile, signOut } = useAuth();
 
   return (
     <div className="border-t p-3">
@@ -99,11 +99,12 @@ function UserMenu() {
             プロフィール
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href="/logout" className="text-destructive flex cursor-pointer">
-              <LogOut className="mr-2 h-4 w-4" />
-              ログアウト
-            </Link>
+          <DropdownMenuItem
+            className="text-destructive cursor-pointer focus:text-destructive"
+            onClick={() => signOut()}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            ログアウト
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

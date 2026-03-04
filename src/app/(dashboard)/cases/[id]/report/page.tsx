@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/client";
@@ -42,7 +42,6 @@ const PdfActions = dynamic(
 
 export default function ReportPage() {
   const params = useParams();
-  const router = useRouter();
   const caseId = params.id as string;
   const { profile } = useAuth();
 
@@ -156,12 +155,11 @@ export default function ReportPage() {
 
       setExistingReports((prev) => [report as Report, ...prev]);
       setIsGenerating(false);
-      router.refresh();
       toast.success("報告書を発行しました", {
         description: `Version ${version}`,
       });
     },
-    [surveyCase, caseId, existingReports.length, profile?.id, router]
+    [surveyCase, caseId, existingReports.length, profile?.id]
   );
 
   const getReportUrl = (path: string) => {

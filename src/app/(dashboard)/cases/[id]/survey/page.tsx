@@ -301,7 +301,6 @@ export default function SurveyPage() {
     }
 
     toast.success("調査フォームを送信しました");
-    router.refresh();
     router.push(`/cases/${caseId}`);
   };
 

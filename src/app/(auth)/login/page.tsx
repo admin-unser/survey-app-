@@ -43,8 +43,7 @@ export default function LoginPage() {
     }
 
     toast.success("ログインしました");
-    router.push("/dashboard");
-    router.refresh();
+    router.replace("/dashboard");
   };
 
   return (

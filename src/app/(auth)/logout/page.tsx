@@ -11,14 +11,20 @@ export default function LogoutPage() {
   useEffect(() => {
     const doSignOut = async () => {
       const supabase = createClient();
-      await supabase.auth.signOut();
-      router.replace("/login");
+      try {
+        // ローカルで即座にサインアウト（サーバー応答を待たない）
+        await supabase.auth.signOut({ scope: "local" });
+      } catch {
+        // 失敗してもリダイレクトする
+      } finally {
+        router.replace("/login");
+      }
     };
     doSignOut();
   }, [router]);
 
   return (
-    <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background">
       <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       <p className="text-muted-foreground">ログアウトしています...</p>
     </div>

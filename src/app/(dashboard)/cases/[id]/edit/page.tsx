@@ -109,7 +109,6 @@ export default function EditCasePage() {
     }
 
     toast.success("案件を更新しました");
-    router.refresh();
     router.push(`/cases/${id}`);
   };
 
