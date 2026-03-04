@@ -71,10 +71,11 @@ export function useAuth() {
     const supabase = createClient();
     try {
       await supabase.auth.signOut({ scope: "local" });
+      // SIGNED_OUT イベントが onAuthStateChange でナビゲーションを処理する
     } catch {
-      // 失敗してもログインへ
+      // 例外時は手動でナビゲート
+      router.replace("/login");
     }
-    router.push("/login");
   }, [router]);
 
   return { profile, isLoading, signOut, isAdmin: profile?.role === "admin" };
