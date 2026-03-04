@@ -15,11 +15,11 @@ export function createClient() {
     auth: {
       // Navigator LockManager によるデッドロックを回避するためカスタムロック関数を使用
       // React Strict Mode のダブルマウントで複数の initialize() が競合する問題を防ぐ
-      lock: async (
+      lock: async <R>(
         _name: string,
         _acquireTimeout: number,
-        fn: () => Promise<unknown>
-      ) => fn(),
+        fn: () => Promise<R>
+      ): Promise<R> => fn(),
     },
   });
   return client;
