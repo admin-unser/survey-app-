@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>現調報告 - 使用ガイド</title>
+  <style>
+    /* ===== 基本スタイル ===== */
+    :root {
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --primary-dark: #1d4ed8;
+      --accent: #0ea5e9;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+      font-size: 10pt;
+      line-height: 1.7;
+      color: var(--gray-900);
+      background: #fff;
+    }
+
+    /* ===== 印刷設定 ===== */
+    @page {
+      size: A4;
+      margin: 15mm 15mm 18mm 15mm;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      .page-break { page-break-before: always; }
+      .avoid-break { page-break-inside: avoid; }
+      body { font-size: 9.5pt; }
+      h1 { font-size: 20pt; }
+      h2 { font-size: 14pt; }
+      h3 { font-size: 11pt; }
+      .step-card, .tip-box, .warn-box { break-inside: avoid; }
+    }
+
+    /* ===== 印刷ボタン ===== */
+    .print-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .print-btn:hover { background: var(--primary-dark); }
+
+    /* ===== 表紙 ===== */
+    .cover {
+      height: 100vh;
+      min-height: 260mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #0ea5e9 100%);
+      color: #fff;
+      text-align: center;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover::before {
+      content: "";
+      position: absolute;
+      width: 400px; height: 400px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+      top: -100px; right: -100px;
+    }
+    .cover::after {
+      content: "";
+      position: absolute;
+      width: 300px; height: 300px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+      bottom: -80px; left: -80px;
+    }
+    .cover-logo {
+      width: 72px; height: 72px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 24px;
+      font-size: 32px;
+    }
+    .cover h1 {
+      font-size: 36pt;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .cover .subtitle {
+      font-size: 16pt;
+      opacity: 0.85;
+      margin-bottom: 40px;
+    }
+    .cover .version-badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 11pt;
+      margin-bottom: 60px;
+    }
+    .cover-footer {
+      position: absolute;
+      bottom: 40px;
+      font-size: 10pt;
+      opacity: 0.7;
+    }
+    .cover-info {
+      display: flex;
+      gap: 40px;
+      font-size: 10pt;
+      opacity: 0.8;
+    }
+
+    /* ===== ページ本体 ===== */
+    .page {
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 0 0 20mm 0;
+    }
+
+    /* ===== 目次 ===== */
+    .toc-page {
+      padding: 40px 0 20px;
+    }
+    .toc-title {
+      font-size: 22pt;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 12px;
+      margin-bottom: 30px;
+    }
+    .toc-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dotted var(--gray-300);
+      font-size: 11pt;
+    }
+    .toc-num {
+      width: 32px; height: 32px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-size: 10pt;
+      flex-shrink: 0;
+      margin-right: 16px;
+    }
+    .toc-item .toc-dots {
+      flex: 1;
+      height: 1px;
+      border-bottom: 2px dotted var(--gray-300);
+      margin: 0 12px;
+    }
+    .toc-page-num {
+      color: var(--gray-500);
+      font-size: 10pt;
+    }
+
+    /* ===== セクションヘッダー ===== */
+    .section {
+      padding: 40px 0 20px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 3px solid var(--primary);
+    }
+    .section-num {
+      width: 48px; height: 48px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18pt;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 18pt;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+    .section-desc {
+      font-size: 10pt;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+
+    /* ===== サブセクション ===== */
+    h3 {
+      font-size: 12pt;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin: 24px 0 12px;
+      padding-left: 12px;
+      border-left: 4px solid var(--primary);
+    }
+
+    /* ===== ステップカード ===== */
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .step-card {
+      display: flex;
+      gap: 16px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .step-num {
+      width: 32px; height: 32px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-size: 11pt;
+      flex-shrink: 0;
+    }
+    .step-content h4 {
+      font-size: 11pt;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--gray-900);
+    }
+    .step-content p {
+      font-size: 9.5pt;
+      color: var(--gray-700);
+      line-height: 1.6;
+    }
+
+    /* ===== テーブル ===== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 9.5pt;
+    }
+    th {
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+    }
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--gray-200);
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: var(--gray-50); }
+
+    /* ===== バッジ ===== */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 8.5pt;
+      font-weight: 600;
+    }
+    .badge-blue { background: #dbeafe; color: #1d4ed8; }
+    .badge-green { background: #dcfce7; color: #15803d; }
+    .badge-yellow { background: #fef9c3; color: #a16207; }
+    .badge-orange { background: #ffedd5; color: #c2410c; }
+    .badge-purple { background: #ede9fe; color: #7c3aed; }
+    .badge-gray { background: var(--gray-100); color: var(--gray-700); }
+
+    /* ===== ヒント・警告ボックス ===== */
+    .tip-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 16px 0;
+      font-size: 9.5pt;
+    }
+    .tip-box::before {
+      content: "💡 ヒント";
+      display: block;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 6px;
+      font-size: 10pt;
+    }
+
+    .warn-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 4px solid var(--warning);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 16px 0;
+      font-size: 9.5pt;
+    }
+    .warn-box::before {
+      content: "⚠️ 注意";
+      display: block;
+      font-weight: 700;
+      color: var(--warning);
+      margin-bottom: 6px;
+      font-size: 10pt;
+    }
+
+    .info-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 4px solid var(--success);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 16px 0;
+      font-size: 9.5pt;
+    }
+    .info-box::before {
+      content: "✅ ポイント";
+      display: block;
+      font-weight: 700;
+      color: var(--success);
+      margin-bottom: 6px;
+      font-size: 10pt;
+    }
+
+    /* ===== ステータスフロー ===== */
+    .status-flow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+      padding: 16px;
+      background: var(--gray-50);
+      border-radius: 10px;
+    }
+    .status-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .status-badge {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 9pt;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .status-label {
+      font-size: 8pt;
+      color: var(--gray-500);
+    }
+    .status-arrow {
+      font-size: 18pt;
+      color: var(--gray-300);
+      margin-bottom: 16px;
+    }
+
+    /* ===== サーベイステップグリッド ===== */
+    .survey-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .survey-step-item {
+      background: var(--primary-light);
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+    .survey-step-item .s-num {
+      font-size: 14pt;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .survey-step-item .s-title {
+      font-size: 9pt;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-top: 4px;
+    }
+    .survey-step-item .s-items {
+      font-size: 8pt;
+      color: var(--gray-500);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    /* ===== 権限テーブル ===== */
+    .role-check { color: var(--success); font-weight: 700; }
+    .role-cross { color: var(--danger); }
+    .role-partial { color: var(--warning); font-weight: 700; }
+
+    /* ===== FAQ ===== */
+    .faq-item {
+      margin-bottom: 16px;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .faq-q {
+      background: var(--primary-light);
+      padding: 12px 16px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      font-size: 10pt;
+    }
+    .faq-q::before { content: "Q. "; }
+    .faq-a {
+      padding: 12px 16px;
+      font-size: 9.5pt;
+      color: var(--gray-700);
+      background: #fff;
+    }
+    .faq-a::before {
+      content: "A. ";
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    /* ===== UI画面モック ===== */
+    .ui-mock {
+      border: 2px solid var(--gray-200);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 16px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .ui-mock-bar {
+      background: var(--gray-900);
+      padding: 8px 12px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .ui-mock-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .ui-mock-content {
+      background: #f8fafc;
+      padding: 20px;
+      display: flex;
+      gap: 16px;
+    }
+    .ui-sidebar {
+      width: 120px;
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 12px 8px;
+      flex-shrink: 0;
+    }
+    .ui-sidebar-item {
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 8pt;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .ui-sidebar-item.active {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+    .ui-main {
+      flex: 1;
+    }
+    .ui-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .ui-stat {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+    .ui-stat .num { font-size: 16pt; font-weight: 800; color: var(--primary); }
+    .ui-stat .lbl { font-size: 7pt; color: var(--gray-500); }
+
+    /* ===== フッター ===== */
+    .footer {
+      margin-top: 40px;
+      padding: 20px;
+      border-top: 2px solid var(--gray-200);
+      text-align: center;
+      color: var(--gray-500);
+      font-size: 8.5pt;
+    }
+
+    p { margin-bottom: 8px; }
+    ul, ol {
+      padding-left: 20px;
+      margin: 8px 0 12px;
+    }
+    li { margin-bottom: 4px; font-size: 9.5pt; }
+    strong { color: var(--gray-900); }
+  </style>
+</head>
+<body>
+
+<!-- 印刷ボタン -->
+<button class="print-btn no-print" onclick="window.print()">
+  🖨️ PDFで保存
+</button>
+
+<!-- ===== 表紙 ===== -->
+<div class="cover">
+  <div class="cover-logo">📋</div>
+  <h1>現調報告</h1>
+  <div class="subtitle">現場調査報告アプリ 使用ガイド</div>
+  <div class="version-badge">Ver. 1.0 &nbsp;|&nbsp; 2026年3月</div>
+  <div class="cover-info">
+    <div>📱 スマートフォン対応</div>
+    <div>☁️ クラウド保存</div>
+    <div>📄 PDF自動生成</div>
+  </div>
+  <div class="cover-footer">
+    NEXT株式会社 &nbsp;|&nbsp; 現調報告システム 操作マニュアル
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ===== 目次 ===== -->
+<div class="toc-page page-break">
+  <div class="toc-title">目次</div>
+
+  <div class="toc-item">
+    <div class="toc-num">1</div>
+    <span>はじめに &mdash; このアプリについて</span>
+    <div class="toc-dots"></div>
+    <span class="toc-page-num">3</span>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">2</div>
+    <span>ログイン・ログアウト</span>
+    <div class="toc-dots"></div>
+    <span class="toc-page-num">4</span>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">3</div>
+    <span>ダッシュボード &mdash; 全体概要の確認</span>
+    <div class="toc-dots"></div>
+    <span class="toc-page-num">5</span>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">4</div>
+    <span>案件管理 &mdash; 案件の作成・検索・管理</span>
+    <div class="toc-dots"></div>
+    <span class="toc-page-num">6</span>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">5</div>
+    <span>調査フォーム &mdash; 現場での調査入力（9ステップ）</span>
+    <div class="toc-dots"></div>
+    <span class="toc-page-num">8</span>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">6</div>
+    <span>報告書 &mdash; PDF自動生成・ダウンロード</span>
+    <div class="toc-dots"></div>
+    <span class="toc-page-num">11</span>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">7</div>
+    <span>報告書一覧 &mdash; 発行済み報告書の管理</span>
+    <div class="toc-dots"></div>
+    <span class="toc-page-num">12</span>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">8</div>
+    <span>マップ &mdash; 現場の地図確認</span>
+    <div class="toc-dots"></div>
+    <span class="toc-page-num">13</span>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">9</div>
+    <span>カレンダー &mdash; 調査スケジュール管理</span>
+    <div class="toc-dots"></div>
+    <span class="toc-page-num">13</span>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">10</div>
+    <span>権限・ロール &mdash; 管理者と現場担当者の違い</span>
+    <div class="toc-dots"></div>
+    <span class="toc-page-num">14</span>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">11</div>
+    <span>よくある質問（FAQ）</span>
+    <div class="toc-dots"></div>
+    <span class="toc-page-num">15</span>
+  </div>
+</div>
+
+
+<!-- ===== 1. はじめに ===== -->
+<div class="section page-break">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div>
+      <div class="section-title">はじめに &mdash; このアプリについて</div>
+      <div class="section-desc">現調報告システムの概要と基本的な利用シーン</div>
+    </div>
+  </div>
+
+  <p>
+    <strong>現調報告</strong>は、エアコン取付工事における<strong>現場調査から報告書発行まで</strong>を一元管理するクラウドアプリケーションです。
+    現場担当者がスマートフォンで調査データを入力するだけで、管理者が確認できる<strong>PDF報告書が自動生成</strong>されます。
+  </p>
+
+  <h3>主な特長</h3>
+
+  <table class="avoid-break">
+    <thead>
+      <tr><th>特長</th><th>内容</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>📱 <strong>スマホ対応</strong></td>
+        <td>現場でスマートフォンからそのまま入力可能。専用アプリのインストール不要</td>
+      </tr>
+      <tr>
+        <td>📄 <strong>PDF自動生成</strong></td>
+        <td>調査フォームの入力内容から、見やすい報告書PDFをワンクリックで発行</td>
+      </tr>
+      <tr>
+        <td>☁️ <strong>クラウド保存</strong></td>
+        <td>データはすべてクラウドに保存。複数人で同時にアクセス可能</td>
+      </tr>
+      <tr>
+        <td>📍 <strong>地図連携</strong></td>
+        <td>案件の住所をGoogleマップで確認。現場への経路案内も対応</td>
+      </tr>
+      <tr>
+        <td>📅 <strong>カレンダー管理</strong></td>
+        <td>調査予定をカレンダーで一覧表示。スケジュールの管理が容易</td>
+      </tr>
+      <tr>
+        <td>🔐 <strong>権限管理</strong></td>
+        <td>管理者・現場担当者でアクセス権限を分離。情報セキュリティを確保</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>基本的な利用フロー</h3>
+  <div class="status-flow avoid-break">
+    <div class="status-item">
+      <div class="status-badge badge-gray">① 案件登録</div>
+      <div class="status-label">管理者</div>
+    </div>
+    <div class="status-arrow">→</div>
+    <div class="status-item">
+      <div class="status-badge badge-blue">② 調査予定</div>
+      <div class="status-label">担当者割当</div>
+    </div>
+    <div class="status-arrow">→</div>
+    <div class="status-item">
+      <div class="status-badge badge-yellow">③ 現場調査</div>
+      <div class="status-label">フォーム入力</div>
+    </div>
+    <div class="status-arrow">→</div>
+    <div class="status-item">
+      <div class="status-badge badge-orange">④ 調査完了</div>
+      <div class="status-label">データ送信</div>
+    </div>
+    <div class="status-arrow">→</div>
+    <div class="status-item">
+      <div class="status-badge badge-green">⑤ 報告書発行</div>
+      <div class="status-label">PDF生成</div>
+    </div>
+  </div>
+
+  <h3>動作環境</h3>
+  <table class="avoid-break">
+    <thead>
+      <tr><th>端末</th><th>推奨ブラウザ</th><th>備考</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>パソコン（Windows / Mac）</td>
+        <td>Google Chrome 最新版、Safari</td>
+        <td>管理業務に最適</td>
+      </tr>
+      <tr>
+        <td>スマートフォン / タブレット</td>
+        <td>Chrome（Android）、Safari（iOS）</td>
+        <td>現場調査入力に最適</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip-box">
+    インターネット接続が必要です。現場でオフライン状態になった場合、データ送信は圏内復帰後に行ってください。
+  </div>
+</div>
+
+
+<!-- ===== 2. ログイン ===== -->
+<div class="section page-break">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div>
+      <div class="section-title">ログイン・ログアウト</div>
+      <div class="section-desc">アカウントへのサインイン方法</div>
+    </div>
+  </div>
+
+  <h3>ログイン手順</h3>
+  <div class="step-list avoid-break">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>アプリのURLにアクセス</h4>
+        <p>管理者から提供されたURLをブラウザのアドレスバーに入力してください。未ログイン時は自動的にログイン画面が表示されます。</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>メールアドレスを入力</h4>
+        <p>管理者から通知された<strong>メールアドレス</strong>を入力します。</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>パスワードを入力</h4>
+        <p>設定したパスワードを入力し、<strong>「ログイン」ボタン</strong>をクリックします。</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>ダッシュボードへ遷移</h4>
+        <p>認証が成功するとダッシュボード画面に移動します。</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>ログアウト手順</h3>
+  <div class="step-list avoid-break">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>画面左下のユーザー名をクリック</h4>
+        <p>サイドバー下部に表示されている自分の名前・アバターをクリックするとメニューが表示されます。</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>「ログアウト」を選択</h4>
+        <p>メニュー内の<strong style="color:#dc2626">「ログアウト」</strong>をクリックするとログイン画面に戻ります。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    共有端末を使用している場合は、必ずログアウトを行ってから端末を離れてください。セッションは長時間放置すると自動的に切れることがあります。
+  </div>
+
+  <h3>パスワードを忘れた場合</h3>
+  <p>ログイン画面の<strong>「パスワードをお忘れの方」</strong>リンクをクリックすると、メールアドレス宛にパスワードリセット用のリンクが送信されます。</p>
+</div>
+
+
+<!-- ===== 3. ダッシュボード ===== -->
+<div class="section page-break">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div>
+      <div class="section-title">ダッシュボード</div>
+      <div class="section-desc">全体の状況を一目で把握できるトップ画面</div>
+    </div>
+  </div>
+
+  <!-- UIモック -->
+  <div class="ui-mock avoid-break">
+    <div class="ui-mock-bar">
+      <div class="ui-mock-dot" style="background:#ff5f57"></div>
+      <div class="ui-mock-dot" style="background:#ffbd2e"></div>
+      <div class="ui-mock-dot" style="background:#28c840"></div>
+    </div>
+    <div class="ui-mock-content">
+      <div class="ui-sidebar">
+        <div style="font-size:8pt;color:#cbd5e1;margin-bottom:12px;font-weight:700;padding:4px 8px">📋 現調報告</div>
+        <div class="ui-sidebar-item active">🏠 ダッシュボード</div>
+        <div class="ui-sidebar-item">📁 案件管理</div>
+        <div class="ui-sidebar-item">📄 報告書一覧</div>
+        <div class="ui-sidebar-item">📍 マップ</div>
+        <div class="ui-sidebar-item">📅 カレンダー</div>
+        <div class="ui-sidebar-item">📖 ガイド</div>
+      </div>
+      <div class="ui-main">
+        <div style="font-size:12pt;font-weight:700;margin-bottom:12px">おかえりなさい、〇〇さん</div>
+        <div class="ui-stat-grid">
+          <div class="ui-stat"><div class="num" style="color:#6b7280">2</div><div class="lbl">未対応</div></div>
+          <div class="ui-stat"><div class="num" style="color:#2563eb">3</div><div class="lbl">予定済み</div></div>
+          <div class="ui-stat"><div class="num" style="color:#d97706">1</div><div class="lbl">調査中</div></div>
+          <div class="ui-stat"><div class="num" style="color:#16a34a">2</div><div class="lbl">調査完了</div></div>
+          <div class="ui-stat"><div class="num" style="color:#7c3aed">1</div><div class="lbl">報告済み</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;font-size:8pt">
+            <div style="font-weight:700;margin-bottom:6px">📅 本日の調査予定</div>
+            <div style="color:#6b7280">・田中太郎 様 11:49〜</div>
+          </div>
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;font-size:8pt">
+            <div style="font-weight:700;margin-bottom:6px">📋 最近の案件</div>
+            <div style="color:#6b7280">・INS-2026-0003 報告済み</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>画面の構成</h3>
+  <table class="avoid-break">
+    <thead>
+      <tr><th>エリア</th><th>説明</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>ステータス集計カード</strong><br>（画面上部）</td>
+        <td>全案件のステータス別件数を5つのカードで表示。管理者は全案件、現場担当者は担当案件のみ集計されます</td>
+      </tr>
+      <tr>
+        <td><strong>本日の調査予定</strong><br>（左下）</td>
+        <td>今日の日付に予定されている調査案件を時系列で表示。案件名クリックで詳細画面へ移動</td>
+      </tr>
+      <tr>
+        <td><strong>最近の案件</strong><br>（右下）</td>
+        <td>最近更新された案件を表示。「すべて見る →」から案件一覧へ移動</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>ステータスの種類</h3>
+  <table class="avoid-break">
+    <thead>
+      <tr><th>ステータス</th><th>意味</th><th>次のアクション</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-gray">未対応</span></td>
+        <td>案件が登録されたが、まだ予定が入っていない</td>
+        <td>調査日時・担当者を設定する</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">予定済み</span></td>
+        <td>調査日時が設定され、現場調査を待っている状態</td>
+        <td>現場へ赴き、調査フォームを入力する</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-yellow">調査中</span></td>
+        <td>現場での調査作業が開始された状態</td>
+        <td>調査フォームをすべて記入し送信する</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-orange">調査完了</span></td>
+        <td>調査フォームの送信が完了した状態</td>
+        <td>報告書を発行する（管理者）</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">報告済み</span></td>
+        <td>PDF報告書が発行された完了状態</td>
+        <td>必要に応じて報告書を再ダウンロード</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===== 4. 案件管理 ===== -->
+<div class="section page-break">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div>
+      <div class="section-title">案件管理</div>
+      <div class="section-desc">調査案件の作成・検索・詳細確認・ステータス更新</div>
+    </div>
+  </div>
+
+  <h3>4-1. 案件一覧画面</h3>
+  <p>サイドバーの「案件管理」をクリックすると案件一覧が表示されます。</p>
+
+  <table class="avoid-break">
+    <thead>
+      <tr><th>機能</th><th>操作方法</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>🔍 <strong>検索</strong></td>
+        <td>検索ボックスに案件番号・顧客名・住所の一部を入力するとリアルタイムで絞り込まれます</td>
+      </tr>
+      <tr>
+        <td>🏷️ <strong>ステータスフィルター</strong></td>
+        <td>ドロップダウンから特定のステータスを選択して絞り込み</td>
+      </tr>
+      <tr>
+        <td>📅 <strong>予定日フィルター</strong></td>
+        <td>開始日・終了日を指定して期間内の案件のみ表示</td>
+      </tr>
+      <tr>
+        <td>🔃 <strong>並び替え</strong></td>
+        <td>更新日（新しい順 / 古い順）、予定日などで並び替え可能</td>
+      </tr>
+      <tr>
+        <td>📊 <strong>CSV / Excel出力</strong></td>
+        <td>画面上部の「CSV」「Excel」ボタンで全案件データをエクスポート</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>4-2. 新規案件の作成</h3>
+  <div class="step-list avoid-break">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>「＋ 新規案件」ボタンをクリック</h4>
+        <p>案件一覧画面の右上にある青いボタンをクリックします。</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>基本情報を入力</h4>
+        <p><strong>顧客名（必須）</strong>・担当者名・作業種別・予定日時・住所・備考などを入力します。</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>「作成」ボタンで登録</h4>
+        <p>ボタンをクリックすると案件番号（例: INS-2026-0001）が自動採番され、案件詳細画面へ移動します。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    作業種別は「現場調査 / メンテナンス / 施工 / 打ち合わせ」から選択できます。
+  </div>
+
+  <h3>4-3. 案件詳細画面</h3>
+  <p>一覧の案件をクリックすると詳細画面が表示されます。</p>
+
+  <table class="avoid-break">
+    <thead>
+      <tr><th>セクション</th><th>内容</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>📋 <strong>基本情報</strong></td>
+        <td>案件番号・ステータスバッジ・作業種別・顧客名・担当者名が表示されます</td>
+      </tr>
+      <tr>
+        <td>👤 <strong>お客様情報</strong></td>
+        <td>顧客名・担当者名・電話番号（タップで発信）・メールアドレス</td>
+      </tr>
+      <tr>
+        <td>📍 <strong>現場情報</strong></td>
+        <td>住所・「Googleマップで開く」リンク・予定日時・担当者</td>
+      </tr>
+      <tr>
+        <td>📄 <strong>報告書</strong></td>
+        <td>発行済みの場合、発行日・バージョン・ダウンロードボタンが表示されます</td>
+      </tr>
+      <tr>
+        <td>📊 <strong>進捗状況</strong></td>
+        <td>5段階のステータスタイムライン。クリックでステータスを更新できます</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>4-4. ステータスの変更方法</h3>
+  <p>案件詳細画面の「進捗状況」セクションにある各ステータスをクリックするだけで更新できます。変更時にトースト通知が表示されます。</p>
+
+  <div class="info-box">
+    調査フォームを送信すると、ステータスは自動的に「調査完了」に変わります。手動で変更する必要はありません。
+  </div>
+
+  <h3>4-5. 案件の編集</h3>
+  <p>案件詳細画面右上の<strong>「編集」ボタン</strong>から顧客名・住所・予定日などの基本情報を変更できます。</p>
+</div>
+
+
+<!-- ===== 5. 調査フォーム ===== -->
+<div class="section page-break">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div>
+      <div class="section-title">調査フォーム</div>
+      <div class="section-desc">現場での調査データを9ステップで入力</div>
+    </div>
+  </div>
+
+  <p>
+    案件詳細画面の<strong>「調査フォーム」ボタン</strong>をクリックすると調査フォームが開きます。
+    フォームは<strong>9つのステップ</strong>に分かれており、順番に入力していきます。
+    途中で中断しても、データは自動保存されるため<strong>次回再開</strong>できます。
+  </p>
+
+  <h3>調査フォーム 9ステップ一覧</h3>
+  <div class="survey-steps avoid-break">
+    <div class="survey-step-item">
+      <div class="s-num">Step 1</div>
+      <div class="s-title">部屋情報</div>
+      <div class="s-items">部屋名 / 床面積 / 階数 / 天井高</div>
+    </div>
+    <div class="survey-step-item">
+      <div class="s-num">Step 2</div>
+      <div class="s-title">既存エアコン</div>
+      <div class="s-items">有無 / メーカー / 型番 / 設置年 / 状態 / 撤去要否</div>
+    </div>
+    <div class="survey-step-item">
+      <div class="s-num">Step 3</div>
+      <div class="s-title">電気系統</div>
+      <div class="s-items">電源種別 / ブレーカー容量 / 専用回路 / コンセント位置</div>
+    </div>
+    <div class="survey-step-item">
+      <div class="s-num">Step 4</div>
+      <div class="s-title">配管・ドレン</div>
+      <div class="s-items">配管ルート / 配管長 / 既設再利用 / ドレン経路</div>
+    </div>
+    <div class="survey-step-item">
+      <div class="s-num">Step 5</div>
+      <div class="s-title">室外機</div>
+      <div class="s-items">設置場所 / 架台要否 / 搬入経路 / スペース確認</div>
+    </div>
+    <div class="survey-step-item">
+      <div class="s-num">Step 6</div>
+      <div class="s-title">壁面・スリーブ</div>
+      <div class="s-items">壁材質 / 壁厚 / スリーブ有無 / 穴あけ可否</div>
+    </div>
+    <div class="survey-step-item">
+      <div class="s-num">Step 7</div>
+      <div class="s-title">追加工事</div>
+      <div class="s-items">化粧カバー / 電気工事 / ドレンポンプ / クレーン / 足場</div>
+    </div>
+    <div class="survey-step-item">
+      <div class="s-num">Step 8</div>
+      <div class="s-title">写真</div>
+      <div class="s-items">室内 / 既設AC / 分電盤 / 室外機 / 配管 / 壁 / その他</div>
+    </div>
+    <div class="survey-step-item">
+      <div class="s-num">Step 9</div>
+      <div class="s-title">コメント・確認</div>
+      <div class="s-items">調査コメント / 調査内容サマリー確認</div>
+    </div>
+  </div>
+
+  <h3>各ステップの操作</h3>
+  <div class="step-list avoid-break">
+    <div class="step-card">
+      <div class="step-num">①</div>
+      <div class="step-content">
+        <h4>ステップを順に入力</h4>
+        <p>画面上部の<strong>ステップインジケーター</strong>で現在の進捗を確認できます。「次へ」ボタンで次のステップへ進み、「前へ」ボタンで戻ることができます。</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">②</div>
+      <div class="step-content">
+        <h4>「保存」ボタンで随時保存</h4>
+        <p>各ステップで「保存」ボタンをクリックするとデータがサーバーに保存されます。圏外になる前に必ず保存しておきましょう。</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">③</div>
+      <div class="step-content">
+        <h4>Step 8 で現場写真をアップロード</h4>
+        <p>カメラで撮影した写真を7つのカテゴリに分類してアップロードします。写真にはキャプション（説明文）も付けられます。</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">④</div>
+      <div class="step-content">
+        <h4>Step 9 で送信</h4>
+        <p>最終ステップでコメントを入力し、調査内容の確認サマリーを確認したら<strong>「調査完了・送信」</strong>ボタンをクリックします。送信後は案件ステータスが「調査完了」に自動更新されます。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    「調査完了・送信」後はフォームの内容を変更できません。送信前に内容を十分確認してください。
+  </div>
+
+  <h3>写真アップロードのカテゴリ</h3>
+  <table class="avoid-break">
+    <thead>
+      <tr><th>カテゴリ</th><th>撮影内容の例</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>🏠 <strong>室内</strong></td><td>エアコン設置予定場所の全景、天井・壁の状態</td></tr>
+      <tr><td>❄️ <strong>既設エアコン</strong></td><td>既存のエアコン本体・型番プレート・取付状況</td></tr>
+      <tr><td>⚡ <strong>分電盤</strong></td><td>ブレーカーボックス全体・回路ラベル</td></tr>
+      <tr><td>🌀 <strong>室外機</strong></td><td>室外機設置スペース・搬入経路・周辺環境</td></tr>
+      <tr><td>🔧 <strong>配管</strong></td><td>既設配管・スリーブ穴・配管ルート</td></tr>
+      <tr><td>🧱 <strong>壁</strong></td><td>壁材・穴あけ予定箇所・スリーブ有無</td></tr>
+      <tr><td>📸 <strong>その他</strong></td><td>特記事項、懸念箇所など</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip-box">
+    写真は複数枚アップロードできます。撮影漏れがないよう、各カテゴリで必要な箇所を網羅的に撮影してください。
+  </div>
+</div>
+
+
+<!-- ===== 6. 報告書 ===== -->
+<div class="section page-break">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div>
+      <div class="section-title">報告書</div>
+      <div class="section-desc">調査データからPDF報告書を自動生成・ダウンロード</div>
+    </div>
+  </div>
+
+  <p>
+    調査フォームの送信が完了した案件（ステータス「調査完了」）に対して、<strong>PDF報告書をワンクリックで発行</strong>できます。
+  </p>
+
+  <h3>報告書の発行手順</h3>
+  <div class="step-list avoid-break">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>案件詳細画面を開く</h4>
+        <p>ステータスが「調査完了」の案件を開きます。</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>「報告書を発行する」ボタンをクリック</h4>
+        <p>画面上部または報告書セクションのボタンをクリックします。PDFの生成が始まります（数秒かかる場合があります）。</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>プレビュー確認・ダウンロード</h4>
+        <p>生成されたPDFがプレビュー表示されます。内容を確認後、<strong>「ダウンロード」ボタン</strong>でPDFファイルとして保存できます。</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>報告書の再発行・バージョン管理</h3>
+  <p>
+    報告書は何度でも再発行できます。再発行するたびに<strong>バージョン番号</strong>（Version 1 → Version 2...）が自動で付与されます。
+    過去のバージョンもすべて保存されており、いつでもダウンロード可能です。
+  </p>
+
+  <div class="info-box">
+    報告書が発行されると案件ステータスが自動的に「報告済み」に更新されます。
+  </div>
+
+  <h3>報告書に含まれる情報</h3>
+  <table class="avoid-break">
+    <thead>
+      <tr><th>セクション</th><th>内容</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>案件基本情報</td><td>案件番号・顧客名・住所・調査日時・担当者</td></tr>
+      <tr><td>部屋情報</td><td>部屋名・床面積・階数・天井高</td></tr>
+      <tr><td>既存エアコン</td><td>現状・型番・撤去要否</td></tr>
+      <tr><td>電気・配管・ドレン</td><td>電源種別・配管ルート・工事要否など</td></tr>
+      <tr><td>室外機・壁面</td><td>設置場所・壁材質・スリーブ状況</td></tr>
+      <tr><td>追加工事</td><td>必要な追加工事の一覧</td></tr>
+      <tr><td>現場写真</td><td>アップロードされた写真をカテゴリ別に掲載</td></tr>
+      <tr><td>担当者コメント</td><td>調査時の特記事項・注意点</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===== 7. 報告書一覧 ===== -->
+<div class="section page-break">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div>
+      <div class="section-title">報告書一覧</div>
+      <div class="section-desc">発行済み報告書の一括管理</div>
+    </div>
+  </div>
+
+  <p>サイドバーの「報告書一覧」をクリックすると、これまでに発行されたすべての報告書を管理できます。</p>
+
+  <table class="avoid-break">
+    <thead>
+      <tr><th>機能</th><th>説明</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>🔍 <strong>検索</strong></td>
+        <td>案件番号・顧客名などで報告書を検索</td>
+      </tr>
+      <tr>
+        <td>📁 <strong>フォルダ形式</strong></td>
+        <td>案件ごとに報告書をまとめて表示。複数バージョンがある場合は折りたたみ表示</td>
+      </tr>
+      <tr>
+        <td>⬇️ <strong>個別ダウンロード</strong></td>
+        <td>任意の報告書PDFを1件ずつダウンロード</td>
+      </tr>
+      <tr>
+        <td>📦 <strong>一括エクスポート</strong></td>
+        <td>複数の報告書をまとめてZIPファイルでダウンロード（管理者のみ）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip-box">
+    報告書一覧からも案件詳細に直接移動できます。案件名またはリンクアイコンをクリックしてください。
+  </div>
+</div>
+
+
+<!-- ===== 8. マップ ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div>
+      <div class="section-title">マップ</div>
+      <div class="section-desc">現場の場所をGoogleマップで確認</div>
+    </div>
+  </div>
+
+  <p>サイドバーの「マップ」をクリックすると、GPS座標または住所が登録された案件をマップ上のピンで確認できます。</p>
+
+  <table class="avoid-break">
+    <thead>
+      <tr><th>機能</th><th>説明</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>📍 <strong>ピン表示</strong></td>
+        <td>案件のステータスに応じた色のピンが表示されます</td>
+      </tr>
+      <tr>
+        <td>🔍 <strong>検索・フィルター</strong></td>
+        <td>ステータスや日付でピンを絞り込み表示</td>
+      </tr>
+      <tr>
+        <td>🖱️ <strong>ピンクリック</strong></td>
+        <td>ピンをクリックすると案件名・ステータスが表示。リンクから案件詳細へ移動可能</td>
+      </tr>
+      <tr>
+        <td>🗺️ <strong>経路案内</strong></td>
+        <td>「Googleマップで開く」からナビアプリを起動し経路確認が可能</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===== 9. カレンダー ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div>
+      <div class="section-title">カレンダー</div>
+      <div class="section-desc">調査スケジュールを月・週・日単位で管理</div>
+    </div>
+  </div>
+
+  <p>サイドバーの「カレンダー」をクリックすると、予定日が設定された案件がカレンダー形式で表示されます。</p>
+
+  <table class="avoid-break">
+    <thead>
+      <tr><th>機能</th><th>説明</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>📅 <strong>表示切替</strong></td>
+        <td>月表示 / 週表示 / 日表示 を切り替えられます</td>
+      </tr>
+      <tr>
+        <td>🖱️ <strong>予定クリック</strong></td>
+        <td>カレンダー上の予定をクリックすると案件詳細へ移動</td>
+      </tr>
+      <tr>
+        <td>🖱️ <strong>ドラッグ&amp;ドロップ</strong></td>
+        <td>管理者は予定をドラッグして別の日付へ移動することでリスケジュールが可能</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip-box">
+    現場担当者はカレンダーを閲覧のみ可能です。日程変更は管理者に依頼してください。
+  </div>
+</div>
+
+
+<!-- ===== 10. 権限 ===== -->
+<div class="section page-break">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div>
+      <div class="section-title">権限・ロール</div>
+      <div class="section-desc">管理者と現場担当者の機能の違い</div>
+    </div>
+  </div>
+
+  <p>このアプリには<strong>管理者</strong>と<strong>現場担当者</strong>の2種類のロールがあります。</p>
+
+  <table class="avoid-break">
+    <thead>
+      <tr>
+        <th>機能</th>
+        <th style="text-align:center">管理者</th>
+        <th style="text-align:center">現場担当者</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ダッシュボード（全案件）</td>
+        <td style="text-align:center"><span class="role-check">✓ 全件</span></td>
+        <td style="text-align:center"><span class="role-partial">△ 担当のみ</span></td>
+      </tr>
+      <tr>
+        <td>案件一覧・検索</td>
+        <td style="text-align:center"><span class="role-check">✓ 全件</span></td>
+        <td style="text-align:center"><span class="role-partial">△ 担当のみ</span></td>
+      </tr>
+      <tr>
+        <td>新規案件の作成</td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+        <td style="text-align:center"><span class="role-cross">✗</span></td>
+      </tr>
+      <tr>
+        <td>案件情報の編集</td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+        <td style="text-align:center"><span class="role-cross">✗</span></td>
+      </tr>
+      <tr>
+        <td>調査フォームの入力・送信</td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+        <td style="text-align:center"><span class="role-check">✓ 担当案件</span></td>
+      </tr>
+      <tr>
+        <td>ステータスの変更</td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+        <td style="text-align:center"><span class="role-partial">△ 一部可</span></td>
+      </tr>
+      <tr>
+        <td>報告書の発行</td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+        <td style="text-align:center"><span class="role-cross">✗</span></td>
+      </tr>
+      <tr>
+        <td>報告書のダウンロード</td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+      </tr>
+      <tr>
+        <td>CSV / Excelエクスポート</td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+        <td style="text-align:center"><span class="role-cross">✗</span></td>
+      </tr>
+      <tr>
+        <td>マップ表示</td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+      </tr>
+      <tr>
+        <td>カレンダー（閲覧）</td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+      </tr>
+      <tr>
+        <td>カレンダー（日程変更）</td>
+        <td style="text-align:center"><span class="role-check">✓</span></td>
+        <td style="text-align:center"><span class="role-cross">✗</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip-box">
+    ロールはアカウント作成時に管理者が設定します。ロールの変更が必要な場合はシステム管理者にお問い合わせください。
+  </div>
+</div>
+
+
+<!-- ===== 11. FAQ ===== -->
+<div class="section page-break">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div>
+      <div class="section-title">よくある質問（FAQ）</div>
+      <div class="section-desc">困ったときの解決ガイド</div>
+    </div>
+  </div>
+
+  <div class="faq-item avoid-break">
+    <div class="faq-q">ログインできません / パスワードを忘れました</div>
+    <div class="faq-a">ログイン画面の「パスワードをお忘れの方」リンクをクリックし、登録メールアドレスを入力してください。パスワードリセット用URLがメールで届きます。メールアドレス自体を忘れた場合は管理者にお問い合わせください。</div>
+  </div>
+
+  <div class="faq-item avoid-break">
+    <div class="faq-q">案件一覧に自分の担当案件が表示されません</div>
+    <div class="faq-a">現場担当者ロールの場合、案件登録時に担当者として指定されていないと一覧に表示されません。管理者に担当者の設定を依頼してください。また、フィルターが設定されている場合は「すべて」に戻して再度確認してください。</div>
+  </div>
+
+  <div class="faq-item avoid-break">
+    <div class="faq-q">調査フォームの入力中にブラウザを閉じてしまいました</div>
+    <div class="faq-a">「保存」ボタンをクリックしていれば、入力したデータはサーバーに保存されています。再度調査フォームを開くと続きから入力できます。保存前の場合は最後に保存した時点のデータが残っています。</div>
+  </div>
+
+  <div class="faq-item avoid-break">
+    <div class="faq-q">写真がアップロードできません</div>
+    <div class="faq-a">以下を確認してください：①インターネット接続が安定しているか、②ファイルサイズが大きすぎないか（10MB以下を推奨）、③ブラウザのカメラ・ファイルアクセス許可が有効か。それでも解決しない場合はページをリロードして再試行してください。</div>
+  </div>
+
+  <div class="faq-item avoid-break">
+    <div class="faq-q">報告書が発行できません</div>
+    <div class="faq-a">報告書の発行には調査フォームの送信（Step 9「調査完了・送信」）が完了している必要があります。案件のステータスが「調査完了」になっているか確認してください。また、報告書発行は管理者のみ可能です。</div>
+  </div>
+
+  <div class="faq-item avoid-break">
+    <div class="faq-q">マップに案件のピンが表示されません</div>
+    <div class="faq-a">案件登録時に住所またはGPS座標が入力されていない場合、ピンは表示されません。案件編集画面から住所を登録してください。また、住所の記入形式が正しくない場合もピンが表示されないことがあります。</div>
+  </div>
+
+  <div class="faq-item avoid-break">
+    <div class="faq-q">報告書のPDFが文字化けします / 正しく表示されません</div>
+    <div class="faq-a">最新バージョンのGoogle Chrome またはSafariでPDFを開いてください。古いブラウザや一部のPDFビューアでは表示が崩れる場合があります。</div>
+  </div>
+
+  <div class="faq-item avoid-break">
+    <div class="faq-q">カレンダーの予定を変更したい</div>
+    <div class="faq-a">カレンダー上での日程変更は管理者のみ可能です。現場担当者の方は管理者にリスケジュールを依頼してください。管理者はカレンダー上で予定をドラッグ&ドロップして日程を変更できます。</div>
+  </div>
+
+  <!-- フッター -->
+  <div class="footer">
+    <p><strong>現調報告 使用ガイド</strong> &nbsp;|&nbsp; Ver. 1.0 &nbsp;|&nbsp; 2026年3月</p>
+    <p>NEXT株式会社 &nbsp;|&nbsp; ご不明な点はシステム管理者までお問い合わせください</p>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+</body>
+</html>
