@@ -241,6 +241,14 @@ export default function CaseDetailPage() {
               <User className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">{caseData.client_name}</span>
             </div>
+            {caseData.client_contact_name && (
+              <div className="flex items-center gap-3">
+                <User className="h-4 w-4 text-muted-foreground opacity-0" />
+                <span className="text-sm text-muted-foreground">
+                  担当: {caseData.client_contact_name}
+                </span>
+              </div>
+            )}
             {caseData.client_phone && (
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-muted-foreground" />

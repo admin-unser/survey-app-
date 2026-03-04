@@ -41,7 +41,7 @@ export function useAuth() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event: string, session: { user: { id: string } } | null) => {
+    } = supabase.auth.onAuthStateChange((event: string, session: { user: { id: string } } | null) => {
       if (event === "SIGNED_OUT") {
         setProfile(null);
         // /logout や /login にいる場合は二重ナビゲーションを防ぐ
@@ -50,16 +50,22 @@ export function useAuth() {
           router.replace("/login");
         }
       } else if (session?.user) {
-        try {
-          const { data, error } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", session.user.id)
-            .maybeSingle();
-          setProfile(error ? null : (data as Profile | null));
-        } catch {
-          setProfile(null);
-        }
+        // NOTE: onAuthStateChange コールバック内で直接 supabase クエリを await すると
+        // _notifyAllSubscribers が await するため initializePromise と循環デッドロックになる。
+        // setTimeout で次のイベントループに遅延させ initializePromise 解決後に実行する。
+        const userId = session.user.id;
+        setTimeout(async () => {
+          try {
+            const { data, error } = await supabase
+              .from("profiles")
+              .select("*")
+              .eq("id", userId)
+              .maybeSingle();
+            setProfile(error ? null : (data as Profile | null));
+          } catch {
+            setProfile(null);
+          }
+        }, 0);
       }
     });
 

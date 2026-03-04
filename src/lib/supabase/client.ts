@@ -11,6 +11,16 @@ export function createClient() {
       "Supabase の環境変数が設定されていません。Vercel の Environment Variables で NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY を設定してください。"
     );
   }
-  client = createBrowserClient(url, key);
+  client = createBrowserClient(url, key, {
+    auth: {
+      // Navigator LockManager によるデッドロックを回避するためカスタムロック関数を使用
+      // React Strict Mode のダブルマウントで複数の initialize() が競合する問題を防ぐ
+      lock: async (
+        _name: string,
+        _acquireTimeout: number,
+        fn: () => Promise<unknown>
+      ) => fn(),
+    },
+  });
   return client;
 }
